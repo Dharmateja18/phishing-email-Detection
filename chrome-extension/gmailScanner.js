@@ -41,7 +41,8 @@ async function scanEmail() {
 
         if (!data.success) return;
 
-        if (data.prediction.toLowerCase().includes("phishing")) {
+        // Show warning only if phishing probability > 80%
+        if (data.prediction === "Phishing" && data.confidence > 0.80) {
 
             showWarningBanner();
 

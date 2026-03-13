@@ -72,7 +72,7 @@ def api_predict():
         model_path = os.path.join(PROJECT_ROOT, "models", "phishing_detector.pkl")
         vectorizer_path = os.path.join(PROJECT_ROOT, "data", "preprocessed_data.pkl")
 
-        prediction = predict_email(
+        result = predict_email(
             model_path,
             vectorizer_path,
             email
@@ -80,7 +80,8 @@ def api_predict():
 
         return jsonify({
             "success": True,
-            "prediction": prediction
+            "prediction": result["label"],
+            "confidence": result["probability"]
         })
 
     except Exception as e:
