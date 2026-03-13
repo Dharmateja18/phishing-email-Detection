@@ -1,12 +1,27 @@
+let lastEmailText = "";
+
+function getEmailText() {
+
+    const emailContainer = document.querySelector("div.a3s");
+
+    if (!emailContainer) return null;
+
+    const text = emailContainer.innerText.trim();
+
+    if (text.length < 20) return null;
+
+    return text;
+}
+
 async function scanEmail() {
 
-    const emailBody = document.querySelector("div.a3s");
-
-    if (!emailBody) return;
-
-    const emailText = emailBody.innerText;
+    const emailText = getEmailText();
 
     if (!emailText) return;
+
+    if (emailText === lastEmailText) return;
+
+    lastEmailText = emailText;
 
     try {
 
@@ -33,8 +48,11 @@ async function scanEmail() {
         }
 
     } catch (error) {
+
         console.log("Scanner error:", error);
+
     }
+
 }
 
 function showWarningBanner() {
@@ -47,20 +65,21 @@ function showWarningBanner() {
 
     banner.style.background = "#ff4d4d";
     banner.style.color = "white";
-    banner.style.padding = "12px";
+    banner.style.padding = "10px";
     banner.style.fontSize = "16px";
     banner.style.fontWeight = "bold";
     banner.style.textAlign = "center";
 
     banner.innerText = "⚠️ WARNING: This email appears to be a phishing attempt.";
 
-    const container = document.querySelector("div.ii.gt");
+    const emailBody = document.querySelector("div.ii.gt");
 
-    if (container) {
+    if (emailBody) {
 
-        container.prepend(banner);
+        emailBody.prepend(banner);
 
     }
+
 }
 
-setInterval(scanEmail, 5000);
+setInterval(scanEmail, 4000);
