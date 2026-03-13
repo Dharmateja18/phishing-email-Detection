@@ -1,13 +1,20 @@
 {
   "manifest_version": 3,
   "name": "Phishing Email Detector",
-  "version": "1.0",
-  "description": "Detect phishing emails using ML model",
-  "permissions": ["activeTab"],
+  "version": "2.0",
+  "description": "Detect phishing emails automatically in Gmail",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "https://phishing-email-detection-0a7t.onrender.com/*"
+  ],
   "action": {
     "default_popup": "popup.html"
   },
-  "host_permissions": [
-    "https://phishing-email-detection-0a7t.onrender.com/*"
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["gmailScanner.js"]
+    }
   ]
 }
