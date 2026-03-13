@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Phishing Email Detector",
+  "version": "1.0",
+  "description": "Detect phishing emails using ML model",
+  "permissions": ["activeTab"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "host_permissions": [
+    "https://phishing-email-detection-ml.onrender.com/*"
+  ]
+}
