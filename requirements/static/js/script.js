@@ -10,16 +10,15 @@ async function handlePredict(event) {
     }
 
     try {
-        const response = await fetch('/predict', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: emailContent
-            })
-        });
-
+        const response = await fetch('/api/predict', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        email: emailContent
+    })
+});
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }

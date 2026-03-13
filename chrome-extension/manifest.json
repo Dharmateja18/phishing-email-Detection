@@ -8,6 +8,6 @@
     "default_popup": "popup.html"
   },
   "host_permissions": [
-    "https://phishing-email-detection-ml.onrender.com/*"
+    "https://phishing-email-detection-0a7t.onrender.com/*"
   ]
 }
