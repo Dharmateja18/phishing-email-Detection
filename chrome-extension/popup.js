@@ -26,7 +26,8 @@ let data = await response.json();
 if(data.success){
 document.getElementById("result").innerText =
 "Prediction: " + data.prediction;
-}else{
+}
+else{
 document.getElementById("result").innerText =
 "Error: " + data.error;
 }
