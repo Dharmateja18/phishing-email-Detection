@@ -1,81 +1,58 @@
-alert("Phishing detector loaded");
-let lastEmailHash = "";
+console.log("Phishing detector script loaded");
 
 
-/* Extract full email text */
-function getEmailText() {
+let lastEmail = "";
 
-    let emailBodies = document.querySelectorAll(".a3s");
 
-    let text = "";
+function extractEmailText() {
 
-    emailBodies.forEach(body => {
-        text += body.innerText + " ";
-    });
+    const body = document.querySelector(".a3s");
 
-    return text.trim();
+    if (!body) return "";
+
+    return body.innerText;
+
 }
 
 
-/* Extract links from email */
-function getEmailLinks() {
+function showBanner() {
 
-    let links = document.querySelectorAll(".a3s a");
-
-    let urlText = "";
-
-    links.forEach(link => {
-        if (link.href) {
-            urlText += " " + link.href;
-        }
-    });
-
-    return urlText;
-}
-
-
-/* Create warning banner */
-function showPhishingBanner() {
-
-    if (document.getElementById("phish-banner")) return;
+    if (document.getElementById("phishing-warning")) return;
 
     const banner = document.createElement("div");
 
-    banner.id = "phish-banner";
+    banner.id = "phishing-warning";
 
     banner.style.background = "#ff4d4f";
     banner.style.color = "white";
-    banner.style.padding = "12px";
-    banner.style.fontWeight = "bold";
+    banner.style.padding = "10px";
     banner.style.textAlign = "center";
-    banner.style.fontSize = "14px";
+    banner.style.fontWeight = "bold";
 
-    banner.innerText =
-        "⚠️ WARNING: This email appears to be a phishing attempt.";
+    banner.innerText = "⚠️ WARNING: This email appears to be a phishing attempt.";
 
-    const toolbar = document.querySelector("h2");
+    const header = document.querySelector("h2");
 
-    if (toolbar) {
-        toolbar.parentNode.insertBefore(banner, toolbar.nextSibling);
+    if (header) {
+
+        header.parentNode.insertBefore(banner, header.nextSibling);
+
     }
+
 }
 
 
-/* Scan the opened email */
 async function scanEmail() {
 
-    const emailText = getEmailText();
-    const links = getEmailLinks();
+    const text = extractEmailText();
 
-    const combinedText = emailText + " " + links;
+    if (!text) return;
 
-    if (!combinedText) return;
+    if (text === lastEmail) return;
 
-    const currentHash = combinedText.substring(0, 120);
+    lastEmail = text;
 
-    if (currentHash === lastEmailHash) return;
-
-    lastEmailHash = currentHash;
+    console.log("Scanning email...");
 
     try {
 
@@ -87,36 +64,28 @@ async function scanEmail() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    email: combinedText
+                    email: text
                 })
             }
         );
 
         const data = await response.json();
 
+        console.log("Prediction:", data);
+
         if (data.prediction === "Phishing") {
 
-            showPhishingBanner();
+            showBanner();
 
         }
 
-    } catch (error) {
+    } catch (err) {
 
-        console.log("Scanner error:", error);
+        console.log("Scanner error:", err);
 
     }
+
 }
 
 
-/* Observe Gmail page changes */
-const observer = new MutationObserver(() => {
-
-    setTimeout(scanEmail, 1500);
-
-});
-
-
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
+setInterval(scanEmail, 2000);

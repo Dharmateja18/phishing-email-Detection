@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Phishing Email Detector",
-  "version": "2.0",
+  "version": "2.1",
   "description": "Detect phishing emails automatically in Gmail",
 
   "permissions": [
