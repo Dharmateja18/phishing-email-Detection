@@ -1,5 +1,5 @@
-import sys
 import os
+import sys
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 
@@ -8,11 +8,19 @@ from flask_cors import CORS
 # --------------------------------------------------
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+PROJECT_ROOT = BASE_DIR
 
-sys.path.insert(0, PROJECT_ROOT)
+sys.path.append(PROJECT_ROOT)
 
-from src.predict import predict_email
+# --------------------------------------------------
+# Import prediction function
+# --------------------------------------------------
+
+try:
+    from src.predict import predict_email
+except Exception as e:
+    print("Import error:", e)
+    predict_email = None
 
 # --------------------------------------------------
 # Flask App Setup
@@ -51,11 +59,17 @@ def contact_page():
 
 
 # --------------------------------------------------
-# API Route (Website + Chrome Extension)
+# API Route
 # --------------------------------------------------
 
 @app.route("/api/predict", methods=["POST"])
 def api_predict():
+
+    if predict_email is None:
+        return jsonify({
+            "success": False,
+            "error": "Prediction module failed to load"
+        }), 500
 
     try:
 
@@ -86,6 +100,8 @@ def api_predict():
 
     except Exception as e:
 
+        print("Prediction error:", e)
+
         return jsonify({
             "success": False,
             "error": str(e)
@@ -93,8 +109,17 @@ def api_predict():
 
 
 # --------------------------------------------------
+# Health check route (important for Render)
+# --------------------------------------------------
+
+@app.route("/health")
+def health():
+    return "OK"
+
+
+# --------------------------------------------------
 # Run App
 # --------------------------------------------------
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000)
