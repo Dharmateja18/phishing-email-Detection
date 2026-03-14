@@ -1,31 +1,40 @@
 import pickle
 
-model = None
-vectorizer = None
-
-def load_model(model_file, vectorizer_file):
-    global model, vectorizer
-
-    if model is None:
-        with open(model_file, "rb") as f:
-            model = pickle.load(f)
-
-    if vectorizer is None:
-        with open(vectorizer_file, "rb") as f:
-            _, _, vectorizer = pickle.load(f)
-
 
 def predict_email(model_file, vectorizer_file, email_text):
 
-    load_model(model_file, vectorizer_file)
+    try:
+        # Load model
+        with open(model_file, "rb") as f:
+            model = pickle.load(f)
 
-    email_vector = vectorizer.transform([email_text]).toarray()
+        # Load vectorizer
+        with open(vectorizer_file, "rb") as f:
+            _, _, vectorizer = pickle.load(f)
 
-    prediction = model.predict(email_vector)[0]
+        # Convert email text to vector
+        email_vector = vectorizer.transform([email_text]).toarray()
 
-    probability = model.predict_proba(email_vector)[0][1]
+        # Predict probability
+        probability = model.predict_proba(email_vector)[0][1]
 
-    return {
-        "label": "Phishing" if prediction == 1 else "Not Phishing",
-        "probability": float(probability)
-    }
+        # Threshold for phishing
+        threshold = 0.85
+
+        if probability >= threshold:
+            label = "Phishing"
+        else:
+            label = "Not Phishing"
+
+        return {
+            "label": label,
+            "probability": float(probability)
+        }
+
+    except Exception as e:
+
+        return {
+            "label": "Error",
+            "probability": 0.0,
+            "error": str(e)
+        }
