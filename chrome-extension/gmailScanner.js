@@ -1,3 +1,4 @@
+alert("Phishing detector loaded");
 let lastEmailHash = "";
 
 
