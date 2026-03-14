@@ -1,19 +1,19 @@
-console.log("Phishing detector script loaded");
-
+console.log("Phishing Gmail scanner loaded");
 
 let lastEmail = "";
 
+function getEmailText() {
 
-function extractEmailText() {
+    let bodies = document.querySelectorAll(".a3s");
 
-    const body = document.querySelector(".a3s");
+    let text = "";
 
-    if (!body) return "";
+    bodies.forEach(body => {
+        text += body.innerText + " ";
+    });
 
-    return body.innerText;
-
+    return text.trim();
 }
-
 
 function showBanner() {
 
@@ -26,33 +26,28 @@ function showBanner() {
     banner.style.background = "#ff4d4f";
     banner.style.color = "white";
     banner.style.padding = "10px";
-    banner.style.textAlign = "center";
     banner.style.fontWeight = "bold";
+    banner.style.textAlign = "center";
 
-    banner.innerText = "⚠️ WARNING: This email appears to be a phishing attempt.";
+    banner.innerText =
+        "⚠️ WARNING: This email appears to be a phishing attempt.";
 
     const header = document.querySelector("h2");
 
     if (header) {
-
         header.parentNode.insertBefore(banner, header.nextSibling);
-
     }
-
 }
-
 
 async function scanEmail() {
 
-    const text = extractEmailText();
+    const text = getEmailText();
 
     if (!text) return;
 
     if (text === lastEmail) return;
 
     lastEmail = text;
-
-    console.log("Scanning email...");
 
     try {
 
@@ -71,21 +66,17 @@ async function scanEmail() {
 
         const data = await response.json();
 
-        console.log("Prediction:", data);
-
         if (data.prediction === "Phishing") {
 
             showBanner();
 
         }
 
-    } catch (err) {
+    } catch (error) {
 
-        console.log("Scanner error:", err);
+        console.log("Scanner error:", error);
 
     }
-
 }
 
-
-setInterval(scanEmail, 2000);
+setInterval(scanEmail, 3000);

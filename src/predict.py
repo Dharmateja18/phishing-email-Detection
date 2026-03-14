@@ -1,12 +1,23 @@
 import pickle
 
+model = None
+vectorizer = None
+
+def load_model(model_file, vectorizer_file):
+    global model, vectorizer
+
+    if model is None:
+        with open(model_file, "rb") as f:
+            model = pickle.load(f)
+
+    if vectorizer is None:
+        with open(vectorizer_file, "rb") as f:
+            _, _, vectorizer = pickle.load(f)
+
+
 def predict_email(model_file, vectorizer_file, email_text):
 
-    with open(model_file, "rb") as f:
-        model = pickle.load(f)
-
-    with open(vectorizer_file, "rb") as f:
-        _, _, vectorizer = pickle.load(f)
+    load_model(model_file, vectorizer_file)
 
     email_vector = vectorizer.transform([email_text]).toarray()
 

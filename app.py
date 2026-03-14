@@ -22,6 +22,7 @@ except Exception as e:
     print("Import error:", e)
     predict_email = None
 
+
 # --------------------------------------------------
 # Flask App Setup
 # --------------------------------------------------
@@ -33,6 +34,15 @@ app = Flask(
 )
 
 CORS(app)
+
+
+# --------------------------------------------------
+# Model paths (loaded once)
+# --------------------------------------------------
+
+MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "phishing_detector.pkl")
+VECTORIZER_PATH = os.path.join(PROJECT_ROOT, "data", "preprocessed_data.pkl")
+
 
 # --------------------------------------------------
 # Website Routes
@@ -83,12 +93,9 @@ def api_predict():
                 "error": "Email text is required"
             }), 400
 
-        model_path = os.path.join(PROJECT_ROOT, "models", "phishing_detector.pkl")
-        vectorizer_path = os.path.join(PROJECT_ROOT, "data", "preprocessed_data.pkl")
-
         result = predict_email(
-            model_path,
-            vectorizer_path,
+            MODEL_PATH,
+            VECTORIZER_PATH,
             email
         )
 
@@ -109,16 +116,25 @@ def api_predict():
 
 
 # --------------------------------------------------
-# Health check route (important for Render)
+# Health Check Route (important for Render)
 # --------------------------------------------------
 
 @app.route("/health")
 def health():
+    return "Server running"
+
+
+# --------------------------------------------------
+# Ping route (optional keep-alive)
+# --------------------------------------------------
+
+@app.route("/ping")
+def ping():
     return "OK"
 
 
 # --------------------------------------------------
-# Run App
+# Run App (for local testing only)
 # --------------------------------------------------
 
 if __name__ == "__main__":
