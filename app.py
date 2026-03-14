@@ -17,7 +17,8 @@ sys.path.append(PROJECT_ROOT)
 # --------------------------------------------------
 
 try:
-    from src.predict import predict_email
+    sys.path.append(os.path.join(PROJECT_ROOT,"src"))
+    from predict import predict_email
 except Exception as e:
     print("Import error:", e)
     predict_email = None
