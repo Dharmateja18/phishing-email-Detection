@@ -1,19 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Phishing Detector</title>
+<meta charset="UTF-8">
+<title>PhishDetect AI</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h2>Email Phishing Detector</h2>
+<div class="container">
 
-<textarea id="emailText" placeholder="Paste email text here"></textarea>
+    <div class="header">
+        <span class="logo">🛡</span>
+        <h2>PhishDetect AI</h2>
+    </div>
 
-<button id="checkBtn">Check Email</button>
+    <p class="subtitle">Scan suspicious email text for phishing threats</p>
 
-<p id="result"></p>
+    <textarea id="emailText" placeholder="Paste email content here..."></textarea>
+
+    <button id="checkBtn">Scan Email</button>
+
+    <div id="result" class="result"></div>
+
+</div>
 
 <script src="popup.js"></script>
 

@@ -1,39 +1,66 @@
 document.getElementById("checkBtn").addEventListener("click", async () => {
 
-let emailText = document.getElementById("emailText").value;
+    const emailText = document.getElementById("emailText").value.trim();
+    const resultBox = document.getElementById("result");
 
-if(!emailText){
-document.getElementById("result").innerText="Please enter email text";
-return;
-}
+    if (!emailText) {
+        resultBox.style.display = "block";
+        resultBox.className = "result phishing";
+        resultBox.innerText = "⚠ Please paste email text first.";
+        return;
+    }
 
-try{
+    // Show loading message
+    resultBox.style.display = "block";
+    resultBox.className = "result";
+    resultBox.innerText = "🔍 Scanning email...";
 
-let response = await fetch(
-"https://phishing-email-detection-0a7t.onrender.com/api/predict",
-{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-email: emailText
-})
-});
+    try {
 
-let data = await response.json();
+        const response = await fetch(
+            "https://phishing-email-detection-0a7t.onrender.com/api/predict",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: emailText
+                })
+            }
+        );
 
-if(data.success){
-document.getElementById("result").innerText =
-"Prediction: " + data.prediction;
-}
-else{
-document.getElementById("result").innerText =
-"Error: " + data.error;
-}
+        const data = await response.json();
 
-}catch(error){
-document.getElementById("result").innerText="Server error";
-}
+        if (!data.success) {
+            resultBox.className = "result phishing";
+            resultBox.innerText = "⚠ Error: " + data.error;
+            return;
+        }
+
+        const prediction = data.prediction.toLowerCase();
+        const confidence = (data.confidence * 100).toFixed(1);
+
+        if (prediction === "phishing") {
+
+            resultBox.className = "result phishing";
+            resultBox.innerText =
+                "⚠ Phishing Email Detected\nConfidence: " + confidence + "%";
+
+        } else {
+
+            resultBox.className = "result legitimate";
+            resultBox.innerText =
+                "✓ Legitimate Email\nConfidence: " + confidence + "%";
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        resultBox.className = "result phishing";
+        resultBox.innerText = "⚠ Server connection failed. Try again.";
+
+    }
 
 });
