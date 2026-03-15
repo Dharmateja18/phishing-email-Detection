@@ -10,7 +10,7 @@ from flask_cors import CORS
 app = Flask("phishdetect_ai")
 CORS(app)
 
-BASE_DIR = os.path.dirname(os.path.abspath(_file_))
+BASE_DIR = os.getcwd()
 
 # -------------------------------
 # Load Model and Vectorizer
@@ -74,6 +74,3 @@ def health():
 # Run App
 # -------------------------------
 
-if _name_ == "_main_":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
