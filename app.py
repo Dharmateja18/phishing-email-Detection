@@ -1,127 +1,79 @@
 import os
-import sys
 import joblib
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 
-# --------------------------------------------------
-# Fix project paths
-# --------------------------------------------------
-
-BASE_DIR = os.getcwd()
-PROJECT_ROOT = BASE_DIR
-
-sys.path.append(PROJECT_ROOT)
-
-# --------------------------------------------------
+# -------------------------------
 # Flask App Setup
-# --------------------------------------------------
+# -------------------------------
 
-app = Flask(
-    "phishing_detector",
-    template_folder=os.path.join(BASE_DIR, "templates"),
-    static_folder=os.path.join(BASE_DIR, "static")
-)
-
+app = Flask("phishdetect_ai")
 CORS(app)
 
-# --------------------------------------------------
-# Load ML Model (load once for faster performance)
-# --------------------------------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(_file_))
 
-MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "phishing_detector.pkl")
+# -------------------------------
+# Load Model and Vectorizer
+# -------------------------------
 
-try:
-    model = joblib.load(MODEL_PATH)
-    print("Model loaded successfully")
-except Exception as e:
-    print("Model loading error:", e)
-    model = None
+MODEL_PATH = os.path.join(BASE_DIR, "models", "phishing_model.pkl")
+VECTORIZER_PATH = os.path.join(BASE_DIR, "models", "vectorizer.pkl")
 
-# --------------------------------------------------
-# Website Routes
-# --------------------------------------------------
+model = joblib.load(MODEL_PATH)
+vectorizer = joblib.load(VECTORIZER_PATH)
+
+print("Model and vectorizer loaded successfully")
+
+# -------------------------------
+# Routes
+# -------------------------------
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    return render_template("index.html")
 
 
-@app.route("/predict")
-def predict_page():
-    return render_template("predict.html")
-
-
-@app.route("/details")
-def details_page():
-    return render_template("details.html")
-
-
-@app.route("/contact")
-def contact_page():
-    return render_template("contact.html")
-
-# --------------------------------------------------
-# API Route (used by Chrome extension + website)
-# --------------------------------------------------
-
-@app.route("/api/predict", methods=["POST"])
-def api_predict():
-
-    if model is None:
-        return jsonify({
-            "success": False,
-            "error": "Model not loaded"
-        }), 500
+@app.route("/predict", methods=["POST"])
+def predict():
 
     try:
 
         data = request.get_json()
 
-        email_text = data.get("email")
+        email_text = data.get("email_text")
 
         if not email_text:
-            return jsonify({
-                "success": False,
-                "error": "Email text is required"
-            }), 400
+            return jsonify({"error": "No email text provided"}), 400
 
-        # ML prediction
-        prediction = model.predict([email_text])[0]
+        # Convert text to features
+        email_vector = vectorizer.transform([email_text])
 
-        if hasattr(model, "predict_proba"):
-            probability = float(model.predict_proba([email_text])[0][1])
+        prediction = model.predict(email_vector)[0]
+
+        if prediction == 1:
+            result = "Phishing Email"
         else:
-            probability = 0.0
+            result = "Legitimate Email"
 
-        label = "Phishing" if prediction == 1 else "Legitimate"
-
-        return jsonify({
-            "success": True,
-            "prediction": label,
-            "confidence": probability
-        })
+        return jsonify({"prediction": result})
 
     except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-        print("Prediction error:", e)
 
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        }), 500
-
-# --------------------------------------------------
-# Health Check Route (for Render monitoring)
-# --------------------------------------------------
+# -------------------------------
+# Health Check
+# -------------------------------
 
 @app.route("/health")
 def health():
-    return jsonify({
-        "status": "running"
-    })
+    return jsonify({"status": "running"})
 
-# --------------------------------------------------
-# Run App (local testing)
-# --------------------------------------------------
 
+# -------------------------------
+# Run App
+# -------------------------------
+
+if _name_ == "_main_":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
