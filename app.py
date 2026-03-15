@@ -16,11 +16,11 @@ BASE_DIR = os.getcwd()
 # Load Model and Vectorizer
 # -------------------------------
 
-MODEL_PATH = os.path.join(BASE_DIR, "models", "phishing_model.pkl")
-VECTORIZER_PATH = os.path.join(BASE_DIR, "models", "vectorizer.pkl")
+MODEL_PATH = os.path.join(BASE_DIR, "models", "phishing_detector.pkl")
+
 
 model = joblib.load(MODEL_PATH)
-vectorizer = joblib.load(VECTORIZER_PATH)
+
 
 print("Model and vectorizer loaded successfully")
 
@@ -46,9 +46,9 @@ def predict():
             return jsonify({"error": "No email text provided"}), 400
 
         # Convert text to features
-        email_vector = vectorizer.transform([email_text])
+       
 
-        prediction = model.predict(email_vector)[0]
+        prediction = model.predict(email_text)[0]
 
         if prediction == 1:
             result = "Phishing Email"
