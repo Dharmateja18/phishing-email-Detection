@@ -8,7 +8,7 @@ from flask_cors import CORS
 # Fix project paths
 # --------------------------------------------------
 
-BASE_DIR = os.path.dirname(os.path.abspath(_file_))
+BASE_DIR = os.getcwd()
 PROJECT_ROOT = BASE_DIR
 
 sys.path.append(PROJECT_ROOT)
