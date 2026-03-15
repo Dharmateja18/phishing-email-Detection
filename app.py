@@ -1,5 +1,6 @@
 import os
 import sys
+import joblib
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 
@@ -7,43 +8,35 @@ from flask_cors import CORS
 # Fix project paths
 # --------------------------------------------------
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(_file_))
 PROJECT_ROOT = BASE_DIR
 
 sys.path.append(PROJECT_ROOT)
-
-# --------------------------------------------------
-# Import prediction function
-# --------------------------------------------------
-
-try:
-    sys.path.append(os.path.join(PROJECT_ROOT,"src"))
-    from predict import predict_email
-except Exception as e:
-    print("Import error:", e)
-    predict_email = None
-
 
 # --------------------------------------------------
 # Flask App Setup
 # --------------------------------------------------
 
 app = Flask(
-    __name__,
+    _name_,
     template_folder=os.path.join(BASE_DIR, "templates"),
     static_folder=os.path.join(BASE_DIR, "static")
 )
 
 CORS(app)
 
-
 # --------------------------------------------------
-# Model paths (loaded once)
+# Load ML Model (load once for faster performance)
 # --------------------------------------------------
 
 MODEL_PATH = os.path.join(PROJECT_ROOT, "models", "phishing_detector.pkl")
-VECTORIZER_PATH = os.path.join(PROJECT_ROOT, "data", "preprocessed_data.pkl")
 
+try:
+    model = joblib.load(MODEL_PATH)
+    print("Model loaded successfully")
+except Exception as e:
+    print("Model loading error:", e)
+    model = None
 
 # --------------------------------------------------
 # Website Routes
@@ -68,42 +61,45 @@ def details_page():
 def contact_page():
     return render_template("contact.html")
 
-
 # --------------------------------------------------
-# API Route
+# API Route (used by Chrome extension + website)
 # --------------------------------------------------
 
 @app.route("/api/predict", methods=["POST"])
 def api_predict():
 
-    if predict_email is None:
+    if model is None:
         return jsonify({
             "success": False,
-            "error": "Prediction module failed to load"
+            "error": "Model not loaded"
         }), 500
 
     try:
 
         data = request.get_json()
 
-        email = data.get("email")
+        email_text = data.get("email")
 
-        if not email:
+        if not email_text:
             return jsonify({
                 "success": False,
                 "error": "Email text is required"
             }), 400
 
-        result = predict_email(
-            MODEL_PATH,
-            VECTORIZER_PATH,
-            email
-        )
+        # ML prediction
+        prediction = model.predict([email_text])[0]
+
+        if hasattr(model, "predict_proba"):
+            probability = float(model.predict_proba([email_text])[0][1])
+        else:
+            probability = 0.0
+
+        label = "Phishing" if prediction == 1 else "Legitimate"
 
         return jsonify({
             "success": True,
-            "prediction": result["label"],
-            "confidence": result["probability"]
+            "prediction": label,
+            "confidence": probability
         })
 
     except Exception as e:
@@ -115,29 +111,26 @@ def api_predict():
             "error": str(e)
         }), 500
 
-
 # --------------------------------------------------
-# Health Check Route (important for Render)
+# Health Check Route (for Render monitoring)
 # --------------------------------------------------
 
 @app.route("/health")
 def health():
-    return "Server running"
-
-
-# --------------------------------------------------
-# Ping route (optional keep-alive)
-# --------------------------------------------------
-
-@app.route("/ping")
-def ping():
-    return "OK"
-
+    return jsonify({
+        "status": "running"
+    })
 
 # --------------------------------------------------
-# Run App (for local testing only)
+# Run App (local testing)
 # --------------------------------------------------
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT",10000))
-    app.run(host="0.0.0.0", port=port)
+if _name_ == "_main_":
+
+    port = int(os.environ.get("PORT", 10000))
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=True
+    )
