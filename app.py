@@ -18,7 +18,7 @@ sys.path.append(PROJECT_ROOT)
 # --------------------------------------------------
 
 app = Flask(
-    _name_,
+    "phishing_detector",
     template_folder=os.path.join(BASE_DIR, "templates"),
     static_folder=os.path.join(BASE_DIR, "static")
 )
