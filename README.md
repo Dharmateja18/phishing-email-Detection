@@ -1,172 +1,240 @@
-# **Phishing Email Detection Using Machine Learning**
+# 🛡️ PhishDetect AI – Phishing Email Detection System
 
-This project builds a phishing email detection system using machine learning techniques. It uses Natural Language Processing (NLP) for text vectorization and Random Forest classifier for classification. The goal is to detect whether an email is a phishing email or legitimate based on its content.
+## 📌 Project Overview
+PhishDetect AI is a *machine learning based phishing email detection system* designed to identify malicious emails and protect users from phishing attacks.
 
----
+The system analyzes the *content of an email* and classifies it as *Phishing* or *Legitimate* using a trained machine learning model.
 
-## **Table of Contents**
-- [Project Overview](#project-overview)
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [Installation](#installation)
-- [Setup and Usage](#setup-and-usage)
-  - [Step 1: Install Dependencies](#step-1-install-dependencies)
-  - [Step 2: Preprocess Data](#step-2-preprocess-data)
-  - [Step 3: Train the Model](#step-3-train-the-model)
-  - [Step 4: Make Predictions](#step-4-make-predictions)
-- [How It Works](#how-it-works)
-- [How to Contribute](#how-to-contribute)
+The project also includes a *Chrome Extension that scans Gmail emails automatically* and displays a warning banner when a phishing email is detected.
 
 ---
 
-## **Project Overview**
+## 🌐 Live Deployment
 
-This project detects phishing emails using machine learning. It involves several steps, including preprocessing raw email data, training a model using a labeled dataset, and using that model to predict whether new emails are phishing or legitimate.
+🔗 *Live Web App (Render):*  
+https://phishing-email-detection-0a7t.onrender.com
 
----
-
-## **Features**
-- **Email Classification**: Classify emails into "Phishing" or "Not Phishing" based on their content.
-- **Text Preprocessing**: The raw email text is converted into a feature vector using TF-IDF (Term Frequency - Inverse Document Frequency).
-- **Model Training**: Train a machine learning model using various algorithms such as Random Forest, Logistic Regression, etc.
-- **Prediction**: Predict whether a new email is phishing based on the trained model.
+🔗 *GitHub Repository:*  
+https://github.com/Dharmateja18/phishing-email-Detection
 
 ---
 
-## **Technologies Used**
-- **Python**: Programming language.
-- **Scikit-learn**: Library for machine learning algorithms.
-- **Pandas**: Data manipulation and analysis.
-- **NumPy**: Library for numerical computing.
-- **Flask** (optional): Can be used to deploy the model as a web service.
-- **Pickle**: For saving and loading the trained model.
+# 🚀 Features
+
+- Machine Learning based phishing detection
+- Email content analysis using NLP
+- Chrome extension for Gmail scanning
+- Real-time phishing warning banner
+- Manual email scanning interface
+- Web application deployed online
+- User friendly interface
 
 ---
 
-## **Installation**
+# 🧠 How It Works
 
-### **1. Clone the Repository**
-```bash
-git clone https://github.com/yourusername/phishing-email-detection.git
-cd phishing-email-detection
+1. User enters email content or Gmail extension scans the email.
+2. Email text is sent to the Flask backend API.
+3. The machine learning model analyzes the email content.
+4. The system predicts whether the email is:
+   - *Phishing Email*
+   - *Legitimate Email*
+5. The result is displayed to the user.
+
+---
+
+# 🏗️ System Architecture
 
 
-### **2. Set up a Virtual Environment (optional but recommended)**
-```bash
-python -m venv venv
-```
-Activate the virtual environment:
-- **Windows**: 
-  ```bash
-  venv\bin
-  cd venv\bin
-  .\Activate or .\Activate.ps1 # For Windows u need to enter that in powershell 
-  ```
-- **macOS/Linux**: 
-  ```bash
-  source venv/bin/activate
-  ```
+User / Gmail
+      ↓
+Chrome Extension
+      ↓
+Flask Backend API
+      ↓
+Machine Learning Model
+      ↓
+Prediction Result
 
-### **3. Install Dependencies**
-```bash
+
+---
+
+# 📂 Project Structure
+
+
+phishing-email-detection
+│
+├── chrome-extension
+│   ├── manifest.json
+│   ├── gmailScanner.js
+│   ├── popup.html
+│   ├── popup.js
+│   ├── style.css
+│   └── icon.png
+│
+├── data
+│
+├── models
+│   └── phishing_detector.pkl
+│
+├── src
+│   ├── preprocess.py
+│   ├── train.py
+│   └── predict.py
+│
+├── static
+│   ├── css
+│   └── js
+│
+├── templates
+│   ├── base.html
+│   ├── home.html
+│   ├── index.html
+│   ├── predict.html
+│   ├── details.html
+│   └── contact.html
+│
+├── app.py
+├── requirements.txt
+└── README.md
+
+
+---
+
+# ⚙️ Technologies Used
+
+### Backend
+- Python
+- Flask
+- Flask-CORS
+- Gunicorn
+
+### Machine Learning
+- Scikit-learn
+- Pandas
+- NumPy
+- Joblib
+
+### Frontend
+- HTML
+- CSS
+- JavaScript
+
+### Deployment
+- Render Cloud Platform
+
+### Browser Extension
+- Chrome Extension API
+
+---
+
+# 🧪 Installation (Local Setup)
+
+### 1️⃣ Clone the repository
+
+bash
+git clone https://github.com/Dharmateja18/phishing-email-Detection.git
+
+
+### 2️⃣ Navigate to project folder
+
+bash
+cd phishing-email-Detection
+
+
+### 3️⃣ Install dependencies
+
+bash
 pip install -r requirements.txt
-```
+
+
+### 4️⃣ Run the application
+
+bash
+python app.py
+
+
+Open browser:
+
+
+http://localhost:10000
+
 
 ---
 
-## **Setup and Usage**
+# 🧩 Chrome Extension Setup
 
-### **Step 1: Install Dependencies**
-Make sure all required libraries are installed:
-```bash
-pip install -r requirements.txt
-```
+1. Open Chrome
+2. Go to
 
-### **Step 2: Preprocess Data**
-Run the `preprocess.py` script to preprocess the raw data and save it as a pickle file:
-```bash
-python src/preprocess.py
-```
-This script:
-- Loads the raw email dataset (`phishing_emails.csv`).
-- Converts the email text into a numerical format using TF-IDF vectorization.
-- Saves the processed data to `preprocessed_data.pkl`.
 
-### **Step 3: Train the Model**
-Train the machine learning model by running the `train.py` script:
-```bash
-python src/train.py
-```
-This script:
-- Loads the preprocessed data.
-- Splits it into training and testing sets.
-- Trains a Random Forest classifier (or other ML models) using the training data.
-- Saves the trained model to `phishing_detector.pkl`.
+chrome://extensions
 
-**Note**: To try a different model, replace the `RandomForestClassifier` in `train.py` with another algorithm, like `LogisticRegression`.
 
-### **Step 4: Make Predictions**
-Predict phishing emails using the `predict.py` script:
-```bash
-python src/predict.py
-```
-This script:
-- Loads the trained model (`phishing_detector.pkl`) and vectorizer.
-- Takes an input email and predicts whether it’s phishing or legitimate.
+3. Enable *Developer Mode*
+4. Click *Load Unpacked*
+5. Select the folder
 
-To test with your own email, modify the `email_text` variable in `predict.py`:
-```python
-email_text = "Your account has been compromised. Click here to reset your password."
-```
+
+chrome-extension
+
+
+6. Open Gmail and the extension will automatically scan emails.
 
 ---
 
-## **How It Works**
+# 📊 Model Training
 
-### **1. Preprocessing**
-- Converts raw email content into numerical feature vectors using TF-IDF vectorization. This calculates the importance of each word in the email relative to other emails.
+The phishing detection model was trained using labeled phishing email datasets.
 
-### **2. Model Training**
-- Trains a Random Forest model to classify emails as phishing or not based on text patterns.
-
-### **3. Prediction**
-- For a new email, the model predicts whether it is phishing or legitimate using the patterns it learned during training.
-
----
-
-## **Troubleshooting Virtual Environment**
-If the virtual environment becomes "locked" (you cannot install or uninstall packages), it may be due to a corrupted `pip` cache. To fix this:
-1. Deactivate the virtual environment:
-   ```bash
-   deactivate
-   ```
-2. Remove the `venv` folder:
-   ```bash
-   rm -rf venv
-   ```
-3. Recreate and activate the virtual environment:
-   ```bash
-   python -m venv venv
-   cd venv\bin
-   \Activate or .\Activate.ps1 # For Windows u need to enter that in powershell 
-   source venv/bin/activate  # For macOS/Linux
-   ```
-4. Reinstall dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+Steps involved:
+- Data preprocessing
+- Feature extraction
+- Model training
+- Model evaluation
+- Model saved as .pkl
 
 ---
 
-## **How to Contribute**
+# 🎯 Example Detection
 
-1. **Fork the repository** and clone it to your local machine.
-2. **Make changes or improvements** and commit them.
-3. **Push your changes** to your forked repository.
-4. **Create a pull request** with a detailed description of the changes.
+Example phishing email:
+
+
+Your package could not be delivered due to an incomplete shipping address.
+Please confirm your details to reschedule delivery.
+
+Track your delivery here:
+http://delivery-status-check.net
+
+
+Prediction:
+
+
+⚠ Phishing Email Detected
+
 
 ---
-Execution Policies:
-In PowerShell, you may encounter execution policy restrictions that prevent scripts from running. You need to set the execution policy appropriately (e.g., using Set-ExecutionPolicy Unrestricted -Scope Process) to allow the execution of Activate.ps1. 
-  
-```
+
+# 🔮 Future Improvements
+
+- URL phishing detection
+- Email header analysis
+- Deep learning based classification
+- Explainable AI for phishing detection
+- Multi-language phishing detection
+
+---
+
+# 👨‍💻 Author
+
+*Dharma Teja*
+
+GitHub:  
+https://github.com/Dharmateja18
+
+---
+
+# 📜 License
+
+This project is created for *educational and research purposes*.
